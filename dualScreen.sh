@@ -96,7 +96,7 @@ if [ $position == "right" ]; then
 
 # Left
 elif [ $position == "left" ]; then
-    fb="$(( $width_s2 * $scale + $width_s1 ))x$(( $height * $scale ))"
+    fb="$(( $width_s2 * $scale + $width_s1 ))x$(( $height_s2 * $scale ))"
     echo "xrandr --output HDMI1 --scale ${scale}x$scale --auto --pos 0x0 --output eDP1 --auto --pos 3840x0 --fb $fb"
     xrandr --output $output --scale ${scale}x$scale --auto --pos 0x0 --output $main --auto --pos 3840x0 --fb $fb
 
