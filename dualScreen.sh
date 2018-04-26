@@ -10,7 +10,7 @@
 function usage(){
     echo -e "Usage : $0 [options]"
     echo -e "\nOptions :"
-    echo -e "\t-p <above,left,right>\tSet the position of the second screen. Default : right"
+    echo -e "\t-p <above,left,right,same>\tSet the position of the second screen. Default : same"
     echo -e "\t-r <resolution>\t\tSet the resolution of the second screen. Default : 1920x1080"
     echo -e "\nResolutions available for $output:"
     echo -e "$res_available"
@@ -37,7 +37,7 @@ output=HDMI1
 res_available="$(xrandr | grep -A 15 $output |  egrep '\s[0-9]+x[0-9]+\s' | awk '{print $1}')"
 
 # Default parameters
-position="right"
+position="same"
 resolution="1920x1080"
 scale=2
 
@@ -60,6 +60,7 @@ while getopts ":p:r:h" opt; do
 	p)
 	    if [ "$OPTARG" != "right" ] &&
 	       [ "$OPTARG" != "left" ] &&
+	       [ "$OPTARG" != "same" ] &&
 	       [ "$OPTARG" != "above" ]; then
 		echo "Wrong argument : $OPTARG"
 		usage
@@ -101,9 +102,12 @@ elif [ $position == "left" ]; then
     xrandr --output $output --scale ${scale}x$scale --auto --pos 0x0 --output $main --auto --pos 3840x0 --fb $fb
 
 # Above
-else
+elif [ $position == "above" ]; then
     max_width=$(( $width_s1 > $width_s2 * $scale ? $width_s1 : $width_s2 * $scale ))
     fb="${max_width}x$(( $height_s1 + $height_s2 * $scale))"
     echo "xrandr --output eDP1 --auto --pos 0x$(( $height_s2 * $scale)) --output HDMI1 --scale ${scale}x$scale --auto --pos 0x0 --fb $fb"
     xrandr --output $main --auto --pos 0x$(( $height_s2 * $scale)) --output $output --scale ${scale}x$scale --auto --pos 0x0 --fb $fb
+else
+    echo "xrandr --output eDP1 --auto --output  HDMI1 --auto --scale 1.65x1.65"
+    xrandr --output eDP1 --auto --output  HDMI1 --auto --scale 1.65x1.65
 fi
